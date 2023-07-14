@@ -1,0 +1,40 @@
+# arch_utils
+# CLI utils for arch linux based distros
+# &_x execute command with x parameter(s) (type: `utils param1 param2 ...`; alias needed)
+# &_ execute command
+# >_ paste command to the command line
+# __ copy command to the clipboard
+
+local helptxt="
+# ------------------------------------- Arch Linux
+pacman -Ssq Z                           &_  Pacman package [S]earch in header only with Fzf
+pacmanHS <package|regex>    [alias]     &_x Pacman package [S]earch in header only
+pacman -Qsq Z                           &_  Pacman package [Q]uery in header only with Fzf
+pacmanHQ <package|regex>    [alias]     &_x Pacman package [Q]uery in header only
+sudo pacman -Rs <package>               >_  Remove package and its dependencies (not req by any other package) 
+sudo downgrade <package>                >_  Downgrade a certain pacakage and add to IgnorePkg
+
+"
+local cmd=$(echo $helptxt | eval "fzf --header='[arch_utils:show]'")
+local sep
+
+if [[ -n $cmd ]]; then
+  if [[ $cmd == *"&_x"* ]]; then #execute alias with param(s)
+    cmd=$(echo ${cmd} | awk '{print $1}')
+    eval ${cmd}
+  elif [[ $cmd == *"&_"* ]]; then #execute
+    sep="&_"
+    cmd=$(echo ${cmd} | awk -F"${sep}" '{print $1}' | sed -e 's/\[alias\]//g' | sed -e 's/\ *$//g')
+    eval ${cmd}
+  elif [[ $cmd == *"__"* ]]; then #clip
+    sep="__"
+    cmd=$(echo ${cmd} | awk -F"${sep}" '{print $1}' | sed -e 's/\ *$//g')
+    echo -n ${cmd} | xclip -selection clipboard #`echo -n` removes newline
+  elif [[ $cmd == *">_"* ]]; then #print to cmdl
+    sep=">_"
+    cmd=$(echo ${cmd} | awk -F"${sep}" '{print $1}' | sed -e 's/\ *$//g')
+    print -z ${cmd}
+  else #print
+    paste <(printf "%s" "$cmd")
+  fi
+fi
