@@ -50,14 +50,6 @@ https://github.com/theuema/dotfiles.git
 
 e.g.: `rsync -ahP zshutils/utils ~/.zshutils`
 
-<details>
-  <summary>TODO: copy script</summary>
-    Execute `./copy.sh`:
-    |Command|Action|
-    |--|--|
-    |`./copy.sh -import`| Copy utils from the repository folder to the autoload path `~/.zshutils`|
-</details>
-
 5. Source, fuzzy find hostname command and print your hostname
 
 Source zsh: `source ~/.zshrc`    
